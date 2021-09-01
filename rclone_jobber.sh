@@ -29,8 +29,7 @@ monitoring_URL="$6"    #cron monitoring service URL to send email if cron failur
 # $new is the directory name of the current snapshot
 # $timestamp is time that old file was moved out of new (not time that file was copied from source)
 new="last_snapshot"
-timestamp="$(date +%F_%T)"
-#timestamp="$(date +%F_%H%M%S)"  #time w/o colons if thumb drive is FAT format, which does not allow colons in file name
+timestamp="$(date +%Y%m%d_%H%M)" # Example 20210901_1754 = Sept 01, 2021 at 5:54pm.
 
 # set log_file path
 path="$(realpath "$0")"                 #this will place log in the same directory as this script
