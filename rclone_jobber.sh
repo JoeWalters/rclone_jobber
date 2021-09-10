@@ -22,7 +22,7 @@ Help()
    echo "Syntax: rclone_jobber.sh -[s|d|f|o|u|h]"
    echo "options:"
    echo "s     Directory to back up (without a trailing slash)."
-   echo "d     Directory to back up to (without a trailing slash or "last_snapshot")"
+   echo 'd     Directory to back up to (without a trailing slash or "last_snapshot")'
    echo "f     move_old_files_to is one of:"
    echo '        "dated_directory" - move old files to a dated directory (an incremental backup)'
    echo '        "dated_files"     - move old files to old_files directory, and append move date to file names (an incremental backup)'
@@ -165,8 +165,8 @@ if [ "$exit_code" -eq 0 ]; then            #if no errors
     echo "$confirmation"
     send_to_log "$confirmation"
     send_to_log ""
-    if [ ! -z "$monitoring_URL" ]; then
-        wget --quiet $monitoring_URL -O /dev/null
+    if [ -n "$monitoring_URL" ]; then
+        wget --quiet "$monitoring_URL" -O /dev/null
     fi
     exit 0
 else
