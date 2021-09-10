@@ -13,17 +13,57 @@
 # If not, see http://creativecommons.org/publicdomain/zero/1.0/.
 # rclone_jobber is not affiliated with rclone.
 
-################################# parameters #################################
-source="$1"            #the directory to back up (without a trailing slash)
-dest="$2"              #the directory to back up to (without a trailing slash or "last_snapshot") destination=$dest/last_snapshot
-move_old_files_to="$3" #move_old_files_to is one of:
-                       # "dated_directory" - move old files to a dated directory (an incremental backup)
-                       # "dated_files"     - move old files to old_files directory, and append move date to file names (an incremental backup)
-                       # ""                - old files are overwritten or deleted (a plain one-way sync backup)
-options="$4"           #rclone options like "--filter-from=filter_patterns --checksum --log-level="INFO" --dry-run"
-                       #do not put these in options: --backup-dir, --suffix, --log-file
+################################### help #####################################
+Help()
+{
+   # Display Help
+   echo "Add description of the script functions here."
+   echo
+   echo "Syntax: rclone_jobber.sh -[s|d|f|o|u|h]"
+   echo "options:"
+   echo "s     Directory to back up (without a trailing slash)."
+   echo "d     Directory to back up to (without a trailing slash or "last_snapshot")"
+   echo "f     move_old_files_to is one of:"
+   echo '        "dated_directory" - move old files to a dated directory (an incremental backup)'
+   echo '        "dated_files"     - move old files to old_files directory, and append move date to file names (an incremental backup)'
+   echo '        ""                - old files are overwritten or deleted (a plain one-way sync backup)'
+   echo 'o     Rclone options like "--filter-from=filter_patterns --checksum --log-level="INFO" --dry-run"'
+   echo '        do not put these in options: --backup-dir, --suffix, --log-file'
+   echo "u     Cron monitoring service URL to send email if cron failure or other error prevented back up"
+   echo "h     This menu."
+   echo
+   echo "Example: rclone_jobber.sh -s /home/bobby -d crypt-gdrive:path/bobby"
+   echo
+}
+
+############################# Get Opts/Parameters #############################
+
+# Get the options
+while getopts ":hs:d:f:o:u:" option; do
+   case $option in
+      s) # source
+         source="$OPTARG";;
+      d) # destination
+         dest="$OPTARG";;
+      f) # move old files to
+         move_old_files_to="$OPTARG";;
+      o) # options
+         options="$OPTARG";;
+      u) # monitoring url
+         monitoring_URL="$OPTARG";;
+      h) # display Help
+         Help
+         exit;;
+      \?) # Invalid option
+         echo "Error: Invalid option"
+         Help
+         exit;;
+      :  ) echo "Missing option argument for -$OPTARG" >&2; exit 1;;
+      *  ) echo "Unimplemented option: -$OPTARG" >&2; exit 1;;
+   esac
+done
+
 job_name="$5"          #job_name="$(basename $0)"
-monitoring_URL="$6"    #cron monitoring service URL to send email if cron failure or other error prevented back up
 
 ################################ set variables ###############################
 # $new is the directory name of the current snapshot
